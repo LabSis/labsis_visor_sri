@@ -1,0 +1,11 @@
+#div_loading{
+    display: none;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: rgba(186,186,186,0.5);
+    z-index: 9999;
+}
+
