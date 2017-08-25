@@ -24,23 +24,38 @@ if (!filter_var($url, FILTER_VALIDATE_URL)) {
     $result['message'] = 'Invalid url.';
 } else {
     try {
+        global $URL_API;
+
+        $query = http_build_query([
+            'action' => 'analize_domain',
+            'url' => $url            
+        ]);
+        
+        $url_api = $URL_API . "?" . $query;
+        
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => $url
+            CURLOPT_URL => $url_api
         ));
         $response = curl_exec($curl);
         curl_close($curl);
         
-        if (!is_null($response) && isset($response)) {
-            $analysis_result = json_decode(join("", $analysis_result));
-            $data = array();
-            $data['tags'] = $analysis_result->resultadosTags;
-            $data['classification'] = $analysis_result->clasificacion;
-            $data['url'] = $analysis_result->url;
+        if (!is_null($response) && isset($response)) {                        
+            $analysis_result = json_decode($response);
+            if ($analysis_result->status == 'OK'){
+                $data = array();
+                $data_array = $analysis_result->data;                
+                $data['tags'] = $data_array->tags;
+                $data['classification'] = $data_array->classification;
+                $data['url'] = $data_array->url;
+                $result['data'] = $data;
+                $result['status'] = 'OK';
+            }else{
+                $result['status'] = 'NO';
+                $result['message'] = 'An error has ocurred.';
+            }
 
-            $result['status'] = 'OK';
-            $result['data'] = $data;
         }
     } catch (Exception $ex) {
         $result['status'] = 'NO';
