@@ -2,10 +2,10 @@
 global $PROTOCOL;
 global $SERVER_PATH;
 global $WEB_PATH;
-global $SRI_PATH;
 global $CSS_PATH;
+global $URL_API;
 
-$SRI_PATH = '/path/to/the/sri.jar';
+$URL_API = "http://domain.com/visor_sri/api/api_sri.php";
 $PROJECT_REL_PATH = 'visor_sri/';
 $PROTOCOL = 'http://';
 $SERVER_PATH = dirname(__FILE__) . '/';

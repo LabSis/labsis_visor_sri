@@ -32,7 +32,7 @@
                     <button id="btn_analyze" class="btn btn-primary btn-lg">Analyze</button>
                 </div>
             </div>
-            <div class="row" id="div_result">
+            <div class="row mb-4" id="div_result">
 
             </div>
         </div>

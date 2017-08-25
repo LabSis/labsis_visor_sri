@@ -23,19 +23,40 @@ if (!filter_var($url, FILTER_VALIDATE_URL)) {
     $result['status'] = 'NO';
     $result['message'] = 'Invalid url.';
 } else {
-    $analysis_result = array();
-    $command = "java -jar " . $SRI_PATH . " " . $url;
-    exec($command, $analysis_result);
-
     try {
-        $analysis_result = json_decode(join("", $analysis_result));
-        $data = array();
-        $data['tags'] = $analysis_result->resultadosTags;
-        $data['classification'] = $analysis_result->clasificacion;
-        $data['url'] = $analysis_result->url;
+        global $URL_API;
 
-        $result['status'] = 'OK';
-        $result['data'] = $data;
+        $query = http_build_query([
+            'action' => 'analize_domain',
+            'url' => $url            
+        ]);
+        
+        $url_api = $URL_API . "?" . $query;
+        
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_URL => $url_api
+        ));
+        $response = curl_exec($curl);
+        curl_close($curl);
+        
+        if (!is_null($response) && isset($response)) {                        
+            $analysis_result = json_decode($response);
+            if ($analysis_result->status == 'OK'){
+                $data = array();
+                $data_array = $analysis_result->data;                
+                $data['tags'] = $data_array->tags;
+                $data['classification'] = $data_array->classification;
+                $data['url'] = $data_array->url;
+                $result['data'] = $data;
+                $result['status'] = 'OK';
+            }else{
+                $result['status'] = 'NO';
+                $result['message'] = 'An error has ocurred.';
+            }
+
+        }
     } catch (Exception $ex) {
         $result['status'] = 'NO';
         $result['message'] = 'An error has occurred.';
